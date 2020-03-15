@@ -2,7 +2,7 @@ from selenium import webdriver
 from selenium.webdriver.support.select import Select
 from fixture.session import SessionHelper
 from fixture.project import ProjectHelper
-
+from fixture.james import JamesHelper
 
 class Application:
 
@@ -17,6 +17,7 @@ class Application:
             raise ValueError("Unrecognized browser %s" % browser)
         self.wd.implicitly_wait(1)
         self.session = SessionHelper(self)
+        self.james = JamesHelper(self)
         self.project = ProjectHelper(self)
         self.base_url = base_url
 
