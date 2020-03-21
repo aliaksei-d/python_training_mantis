@@ -21,9 +21,8 @@ def load_config(file):
 def app(request, config):
     global fixture
     browser = request.config.getoption("--browser")
-    web_config = config['web']
     if fixture is None or not fixture.is_valid():
-        fixture = Application(browser=browser, base_url=config['web']['baseUrl'])
+        fixture = Application(browser=browser, config=config)
     return fixture
 
 
