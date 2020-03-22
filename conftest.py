@@ -51,19 +51,20 @@ def load_from_module(module):
 
 
 @pytest.fixture(scope="session", autouse=True)
-def configure_server(request, config):
-    install_server_configuration(config['ftp']['host'], config['ftp']['username'], config['ftp']['password'])
+def stop(request):
     def fin():
-        restore_server_configuration(config['ftp']['host'], config['ftp']['username'], config['ftp']['password'])
+        fixture.session.ensure_logout()
+        fixture.destroy()
     request.addfinalizer(fin)
+    return fixture
 
-def install_server_configuration(host, username, password):
-    with ftputil.FTPHost(host, username, password) as remote:
-        if remote.path.isfile('config_inc.php.bak'):
-            remote.remove('config_inc.php.bak')
-        if remote.path.isfile('config_inc.php'):
-            remote.rename('config_inc.php', 'config_inc.php.bak')
-        remote.upload(os.path.join(os.path.dirname(__file__), 'resources/config_inc.php'), 'config_inc.php')
+# def install_server_configuration(host, username, password):
+#     with ftputil.FTPHost(host, username, password) as remote:
+#         if remote.path.isfile('config_inc.php.bak'):
+#             remote.remove('config_inc.php.bak')
+#         if remote.path.isfile('config_inc.php'):
+#             remote.rename('config_inc.php', 'config_inc.php.bak')
+#         remote.upload(os.path.join(os.path.dirname(__file__), 'resources/config_inc.php'), 'config_inc.php')
 
 def restore_server_configuration(host, username, password):
     with ftputil.FTPHost(host, username, password) as remote:

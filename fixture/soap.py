@@ -17,13 +17,19 @@ class SoapHelper:
         except WebFault:
             return False
 
+    def get_link(self):
+        return Client(self.app.config['web']['baseUrl'] + "api/soap/mantisconnect.php?wsdl")
+
     def get_project_list(self, username, password):
-        client = Client("http://localhost/mantisbt-1.2.20/api/soap/mantisconnect.php?wsdl")
+        client = self.get_link()
         try:
-            list = []
-            res = client.service.mc_projects_get_user_accessible(username, password)
-            for projects in res:
-                project = Project(id=projects.id, name=projects.name, description=projects.description_text)
-            return list.append(project)
+            test_access = client.service.mc_projects_get_user_accessible(username, password)
+            projects = []
+            for i in test_access:
+                id = i.id
+                name = i.name
+                description = i.description
+                projects.append(Project(id=id, name=name, description=description))
+            return list(projects)
         except WebFault:
-            return ('SOAP Error')
+            return False
